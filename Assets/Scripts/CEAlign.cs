@@ -59,14 +59,18 @@ namespace Nanome
         }
 
 
-        public float4x4 Run(float3[] prot1, int lenA, float3[] prot2,
-                        int lenB, out int resLen, out float resRMSD, float d0,
-                        float d1, int windowSize, int gapMax)
+        public float4x4 Run(float3[] prot1, float3[] prot2,
+                        out int resLen, out float resRMSD, float d0 = 3.0f,
+                        float d1 = 4.0f, int windowSize = 8, int gapMax = 30)
         {
 
             int smaller;
             int bufferSize;
             PathCache paths = default;
+
+            int lenA = prot1.Length;
+            int lenB = prot2.Length;
+
 
             smaller = lenA < lenB ? lenA : lenB;
 
