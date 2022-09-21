@@ -59,9 +59,8 @@ namespace Nanome
         }
 
 
-        public float4x4 Run(float3[] prot1, float3[] prot2,
-                        out int resLen, out float resRMSD, float d0 = 3.0f,
-                        float d1 = 4.0f, int windowSize = 8, int gapMax = 30)
+        public static CEAlignResult Run(float3[] prot1, float3[] prot2,
+                        float d0 = 3.0f, float d1 = 4.0f, int windowSize = 8, int gapMax = 30)
         {
 
             int smaller;
@@ -87,16 +86,18 @@ namespace Nanome
             float bestRMSD;
             int bestLen = 0;
             // Get the optimal superposition here...
-            float4x4 result = findBest(prot1, prot2, paths, bufferSize, smaller, windowSize, out bestLen, out bestRMSD);
+            float4x4 matrix = findBest(prot1, prot2, paths, bufferSize, smaller, windowSize, out bestLen, out bestRMSD);
 
-            resRMSD = (float)bestRMSD;
-            resLen = bestLen;
+            CEAlignResult result = new();
+            result.TransformationMatrix = matrix;
+            result.RMSD = (float)bestRMSD;
+            result.ResLen = bestLen;
 
             return result;
         }
 
 
-        float[] calcDM(float3[] coords, int len)
+        private static float[] calcDM(float3[] coords, int len)
         {
             float[] result = new float[len * len];
 
@@ -111,7 +112,7 @@ namespace Nanome
             return result;
         }
 
-        float[] calcS(float[] d1, float[] d2, int lenA, int lenB, int wSize)
+        private static float[] calcS(float[] d1, float[] d2, int lenA, int lenB, int wSize)
         {
             int i;
             float winSize = (float)wSize;
@@ -162,7 +163,7 @@ namespace Nanome
         }
 
 
-        PathCache findPath(float[] S, float[] dA, float[] dB, int lenA, int lenB, float D0, float D1, int winSize, int gapMax, out int bufferSize)
+        private static PathCache findPath(float[] S, float[] dA, float[] dB, int lenA, int lenB, float D0, float D1, int winSize, int gapMax, out int bufferSize)
         {
             // the best Path's score
             float bestPathScore = 1e6f;
@@ -461,7 +462,7 @@ namespace Nanome
         }
 
 
-        float4x4 findBest(float3[] coordsA, float3[] coordsB, PathCache paths, int bufferSize, int smallerSize, int winSize, out int bestLen, out float bestRMSD)
+        private static float4x4 findBest(float3[] coordsA, float3[] coordsB, PathCache paths, int bufferSize, int smallerSize, int winSize, out int bestLen, out float bestRMSD)
         {
             // keep the best values
             bestRMSD = 1e6f;
@@ -667,5 +668,12 @@ namespace Nanome
 
             return rVal;
         }
+    }
+
+    public struct CEAlignResult
+    {
+        public float4x4 TransformationMatrix;
+        public float RMSD;
+        public int ResLen;
     }
 }
