@@ -1,4 +1,5 @@
-# CEAlignCsharp
+# C# implementation of CEAlign 
+
 Implementation of the CEAlign structural alignment algorithm to align two proteins.
 
 The input is usually 2 lists of alpha carbons positions.
